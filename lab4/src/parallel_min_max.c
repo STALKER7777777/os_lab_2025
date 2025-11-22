@@ -9,6 +9,7 @@
 volatile sig_atomic_t timeout_occurred = 0;
 
 void timeout_handler(int sig) {
+    (void)sig; // Явно указываем, что параметр не используется
     timeout_occurred = 1;
 }
 
@@ -29,20 +30,22 @@ int main(int argc, char *argv[]) {
         alarm(timeout);
     }
     
-    // Создание дочерних процессов (ваш существующий код)
+    // Создание дочерних процессов
     pid_t pid1 = fork();
     if (pid1 == 0) {
         // Дочерний процесс 1 - поиск минимума
-        // Ваш существующий код для поиска минимума
+        printf("Child process 1 (PID: %d) started\n", getpid());
         sleep(15); // Имитация долгой работы для теста
+        printf("Child process 1 finished\n");
         exit(0);
     }
     
     pid_t pid2 = fork();
     if (pid2 == 0) {
         // Дочерний процесс 2 - поиск максимума
-        // Ваш существующий код для поиска максимума
+        printf("Child process 2 (PID: %d) started\n", getpid());
         sleep(15); // Имитация долгой работы для теста
+        printf("Child process 2 finished\n");
         exit(0);
     }
     
@@ -67,7 +70,7 @@ int main(int argc, char *argv[]) {
                 kill(pid2, SIGKILL);
                 break;
             }
-            usleep(100000); // Пауза 100ms перед следующей проверкой
+            sleep(1); // Используем sleep вместо usleep для простоты
         } else {
             // Один из дочерних процессов завершился
             printf("Child process %d finished\n", finished_pid);
@@ -79,5 +82,6 @@ int main(int argc, char *argv[]) {
         // Очищаем оставшиеся процессы
     }
     
+    printf("Parent process finished\n");
     return 0;
 }
